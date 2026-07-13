@@ -1,0 +1,183 @@
+<html lang="ja">
+  
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>年号暗記</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"> 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+  
+<body>
+  <div id="share-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="title">シェア</p>
+        <span id="share-modal-close" class="close-button">&times;</span>
+      </div>
+      <img src="qrcode.png" alt="QR Code">
+    </div>
+  </div>
+  
+  
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="accountSettingsDrawer" class="drawer">
+    <div class="drawer-header">
+      <p>アカウント設定</p>
+      <span id="drawerCloseButton" class="drawer-close-button">&times;</span>
+    </div>
+    <div class="drawer-content">
+      <div class="drawer-section">
+        <p class="title">現在のユーザー</p>
+        <p>ID: <strong id="drawerUserId">取得中...</strong><span></span></p>
+        
+        <button id="logout-button" class="logout-button normal-button">ログアウト</button>
+      </div>
+      <div class="drawer-section">
+        <p class="title">ユーザーネーム</p>
+        <p>現在の名前: <strong id="drawerUsername">取得中...</strong></p>
+        <input type="text" id="newUsernameInput" placeholder="新しい名前">
+        <button id="changeUsernameButton" class="normal-button" disabled="true">名前を変更</button>
+        <p id="username-message"></p>
+      </div>
+      <div class="drawer-section">
+        <p class="title">通知</p>
+        <button class="normal-button">通知を有効にする</button>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <header id="app-header">
+    <div id="title-area">
+      <p id="header-title">年号暗記</p>
+      <button id="share-modal-btn">シェア</button>
+    </div>
+    <p id="header-loading">loading...</p>
+    <button id="login-button" class="hidden">ログイン</button>
+    <button id="setting-button" class="hidden">アカウント情報</button>
+  </header>
+  
+  
+  <main>
+    <div id="selection-container">
+      <p id="selection-title">出題設定</p>
+      <!--
+      <div class="selection">
+        <div class="segmented-buttons">
+          <button class="type-button active" data-type="card">my listから出題</button>
+          <button class="type-button" data-type="output">通常の問題から出題</button>
+        </div>
+      </div>
+-->
+      
+      <div class="lists">
+        <div id="my-list-area" class="lists-area hidden">
+          <p class="title">my list</p>
+          <div id="my-list-buttons" class="buttons">
+            <div class="button">
+              <button class="choose-button " data-count="3"><span>間違えた問題</span></button>
+              <button class="edit-button">編集</button>
+            </div>
+            <div class="button">
+              <button class="choose-button" data-count="3"><span>重要！！</span></button>
+              <button class="edit-button">編集</button>
+            </div>
+          </div>
+        </div>
+      
+        <div id="problems-area" class="lists-area">
+          <p class="title">問題</p>
+          <div id="problems-buttons" class="buttons">
+            <div class="button">
+              <button class="choose-button problems-button" data-count="3" data-unit="2-1"><span>２章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="3" data-unit="2-2"><span>２章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="2-3"><span>２章３節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="3-1"><span>３章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="3-2"><span>３章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="4-1"><span>４章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="4-2"><span>４章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="4-3"><span>４章３節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="5-1"><span>５章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="5-2"><span>５章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="5-3"><span>５章３節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="5-4"><span>５章４節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="6-1"><span>６章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="6-2"><span>６章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="6-3"><span>６章３節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="6-4"><span>６章４節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="7-1"><span>７章１節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="7-2"><span>７章２節</span></button>
+            </div>
+            <div class="button">
+              <button class="choose-button problems-button" data-count="0" data-unit="7-3"><span>７章３節</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <span class="split-line"></span>
+      <button id="start-button" disabled>スタート！</button>
+      <p id="start-message"></p>
+     
+    </div>
+  </main>
+  
+  <footer>
+    <p>QRコードは株式会社デンソーウェーブの登録商標です。</p>
+  </footer>
+</body>
+  
+<script type="module" src="script.js"></script>
+</html>
